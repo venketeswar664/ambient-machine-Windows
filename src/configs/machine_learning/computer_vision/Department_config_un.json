@@ -1,0 +1,45 @@
+{
+    "pipeline_name": "universal_detector_pipeline",
+    "start_machine": "camera",
+    "pipeline": {
+        "detector": {
+            "name": "Detector",  
+            "module": "src/core/think/machine_learning/computer_vision/detector.py",
+            "config": {
+              "modelName": "",
+              "modelType": "",
+              "modelPath" : "",
+              "trackerPath": "",
+              "convertEngine": false,
+              "conf": 0.0,
+              "classIds": [],
+              "inputDims": [],
+              "security_enabled": true,
+              "device": "cuda:0", 
+              "plot": true,
+              "plot_overlays": true
+            },
+            "input": {
+              "ip_camera": "IP_Camera"
+            },
+            "execute": {
+              "process": {
+                "input": {
+                    "ip_camera": "IP_Camera"
+                }
+            }
+            },
+            "output": {
+              "labels": "list",
+              "boxes": "list", 
+              "track_ids": "list",
+              "confidences": "list",
+              "zones_track_id": "dict",
+              "time_stamp": "str",
+              "frame": "ndarray",
+              "frame_number": "int"
+            },
+            "next_module": []
+          }
+      }
+  }

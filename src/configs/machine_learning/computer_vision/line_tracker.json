@@ -1,0 +1,39 @@
+{
+    "Track Store": {
+       "name": "Store Tracker",
+       "comment": "This pipeline manages the state of a store. Which tells us where and how many humans (as track_ids) are available in the store and what are the possibility of the track_id to be moving in the store",
+       "module": "src/core/machine_learning.machine_learning.py",
+       "input": {
+           "camera": "camera class",
+           "zone": "zone"
+       },
+       "pipeline": {
+           "detector": {
+               "name": "person detector",
+               "module": "src/core/machine_learning/computer_vision/detector.py",
+               "config": {
+                   "model_path": "src/models/yolov8m-pose.pt",
+                   "tracker_path": "src/configs/machine_learning/computer_vision/tracker/botsort_with_reid.yaml",
+                   "plot": true,
+                   "conf": 0.60,
+                   "class_ids": [0, 1]
+               },
+               "input" : ["frame"],
+               "output": ["labels", "masks", "boxes", "track_ids", "confidence", "time_stamp", "frame"],
+               "process": ["process"]
+        
+           },
+           "labels_tracker": {
+                "name": "label tracker",
+                "comment": "This module tracks labels for all the track_ids and stores it in databases.",
+                "module": "src/core/machine_learning/computer_vision/label_tracker.py",
+                "config": {
+                    "time_limit": 10
+                },
+                "input" : ["labels", "track_ids"],
+                "output": ["labels"],
+                "process": ["process"]
+           }
+       }
+    }
+}

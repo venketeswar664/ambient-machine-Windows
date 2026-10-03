@@ -1,0 +1,14 @@
+/src/models
+/results
+/logs
+/repeat_entry/results
+/src/configs/io_manager
+/bin
+/repeat_entry/data
+/repeat_entry/models
+/videos
+__pycache__/
+*.py[cod]
+*$py.class
+__init__.py
+/src/configs/backup_service/video_backup/Belapur

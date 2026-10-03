@@ -1,0 +1,51 @@
+services:
+  crop_storage_service:
+    enabled: false
+    attached_to_main: true
+    runner: "src/process_supervisor/runners/cropd.py"
+    description: "Periodically saves cropped images for detected objects."
+
+  video_backup_scheduler:
+    enabled: false
+    attached_to_main: true
+    run_now: true  # ← Add this explicitly
+    schedule: "@every 3600s"
+    script: "src/services/video_backup_scheduler.py"
+    args:
+      - "--run-now"
+      - "--log-to-file"
+    description: "Generate per-camera backup configs and run once."
+
+  entry_exit_service:
+    enabled: false
+    attached_to_main: true        # <<< change to true
+    # Prefer @every format in embedded mode
+    schedule: "@every 600s"       # 10 minutes
+    script: "src/services/entry_exit_service.py"
+    args: []
+
+  first_machine_service:
+    enabled: true
+    attached_to_main: true
+    runner: "src/services/main_pipeline_service.py"
+    description: "Keeps First Machine running 07:00-23:00 daily (self-scheduling)."
+
+
+  camera_config_reconciler:
+    enabled: true
+    attached_to_main: true
+    runner: "src/services/camera_config_reconciler.py"
+    description: "Watches cameraConfig and adds/removes Circus watchers (truck_safety_<cameraId>)."
+
+
+  repeat_entry_service:
+    enabled: true
+    attached_to_main: true
+    schedule: "05 22 * * *"
+    script: "src/process_supervisor/runners/repeat_entry_runner.py"
+    description: "Nightly runner for the Repeat Entry Detection pipeline (runs at 10:15 PM daily)."
+
+
+
+  
+

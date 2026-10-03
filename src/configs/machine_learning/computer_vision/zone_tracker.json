@@ -1,0 +1,63 @@
+{
+    "Track Zone": {
+       "name": "zonal_kpi_calculation",
+       "module": "src/core/machine_learning.machine_learning.py",
+       "input": {
+           "camera": "camera class",
+           "zone": "zone"
+       },
+       "pipeline": {
+           "detector": {
+               "name": "person detector",
+               "module": "src/core/machine_learning/computer_vision/detector.py",
+               "config": {
+                   "model_path": "./src/models/Augmented_Digital_30Mar_2024.engine",
+                   "tracker_path": "src/configs/machine_learning/computer_vision/tracker/botsort_with_reid.yaml",
+                   "plot": true,
+                   "conf": 0.6,
+                   "class_ids": [0, 1]
+               },
+               "input" : ["frame"],
+               "output": ["labels", "masks", "boxes", "track_ids", "confidence", "time_stamp", "frame"],
+               "process": ["process"]
+           },
+           "labels_tracker": {
+                "name": "label tracker",
+                "comment": "This module tracks labels for all the track_ids and stores it in databases.",
+                "module": "src/core/machine_learning/computer_vision/label_tracker.py",
+                "config": {
+                    "time_limit": 10
+                },
+                "input" : ["labels", "track_ids"],
+                "output": ["labels"],
+                "process": ["process"]
+           },
+           "zone_tracker": {
+                "name": "zone tracker",
+                "module": "src/core/machine_learning/computer_vision/zone_interaction_tracker_v2.py",
+                "config": {
+                    "window": 37
+                },
+                "input" : ["frame", "boxes", "track_ids", "labels", "zone_updated_track_ids"],
+                "output": ["track_ids", "zone_frequent_track_ids", "zone_updated_track_ids", "zone_name", "zone_type"],
+                "process": ["process", "plot"]
+           },
+           "store_kpis": {
+                "name": "Kpi DB Handler",
+                "module": "src/database/kpi_handler.py",
+                "config": {},
+                "input" : ["track_ids", "time_stamp", "zone_frequent_track_ids", "zone_updated_track_ids", "zone_name", "zone_type"],
+                "output": [],
+                "process": ["store"]
+            },
+            "store_metadata": {
+                "name": "Metadata DB Handler",
+                "module": "src/database/metadata_handler.py",
+                "config": {},
+                "input" : ["frame_number", "time_stamp", "labels", "boxes", "track_ids", "confidence", "zone_name", "zone_type"],
+                "output": [],
+                "process": ["store"]
+            }
+       } 
+    }
+}

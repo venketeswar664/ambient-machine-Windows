@@ -1,0 +1,100 @@
+{
+    "pipeline_name": "ambient_machine_pipeline",
+    "pipeline": {
+        "get_cameras": {
+            "name": "Get Cameras",
+            "module": "src/core/sensors/get_camera_doc.py",
+            "config": {
+                "collection": "src/database/schemas/cameras_schema.py",
+                "fields": ["camera_address", "device_name", "zones", "process_skip_frame", "pipelines"]
+            },
+            "input": {},
+            "execute": {
+                "process": {
+                    "multiprocessing": false,
+                    "multithreading": false
+                }
+            },
+            "output": {
+                "cameras_dict": "dict"
+            },
+            "next_module": ["OrchestratorEngine"]
+        },
+        "OrchestratorEngine": {
+            "name": "Orchestrator Engine",
+            "module": "src/orchestrator/orchestrator_engine.py",
+            "config": {},
+            "input": {
+                "cameras_dict": "dict"
+            },
+            "execute": {
+                "process": {
+                    "multiprocessing": true,
+                    "multithreading": false
+                }
+            },
+            "output": {
+            },
+            "next_module": []
+        },
+        "detector": {
+            "name": "Person Detector",
+            "module": "src/core/machine_learning/computer_vision/detector.py",
+            "config": {
+                "model_path": "./src/models/Augmented_Digital_30Mar_2024.engine",
+                "tracker_path": "src/configs/machine_learning/computer_vision/tracker/botsort_with_reid.yaml",
+                "plot": true,
+                "conf": 0.6,
+                "class_ids": [0, 1],
+                "zones": "{{ zones }}"
+            },
+            "input": {
+                "ip_camera": "IP_Camera"
+            },
+            "execute": {
+                "process": {
+                    "multiprocessing": false,
+                    "multithreading": false
+                }
+            },
+            "output": {
+                "labels": "numpy.ndarray",
+                "masks": "numpy.ndarray",
+                "boxes": "numpy.ndarray",
+                "track_ids": "numpy.ndarray",
+                "confidence": "numpy.ndarray",
+                "time_stamp": "str",
+                "frame": "numpy.ndarray"
+            },
+            "next_module": ["zone_tracker"]
+        },
+
+        "zone_tracker": {
+            "name": "Zone Tracker",
+            "module": "src/core/machine_learning/computer_vision/zone_interaction_tracker_v2.py",
+            "config": {
+                "tracking_window": 37,
+                "zones": "{{ zones }}",
+                "camera": "{{ camera_doc }}"
+            },
+            "input": {
+                "frame": "numpy.ndarray",
+                "boxes": "numpy.ndarray",
+                "track_ids": "numpy.ndarray",
+                "labels": "numpy.ndarray",
+                "confidence": "numpy.ndarray",
+                "time_stamp": "str"
+            },
+            "execute": {
+                "process": {
+                    "multiprocessing": false,
+                    "multithreading": false
+                }
+            },
+            "output": {
+                "zone_interaction_dict": "dict"
+            },
+            "next_module": ["detector"]
+        }
+    }
+}

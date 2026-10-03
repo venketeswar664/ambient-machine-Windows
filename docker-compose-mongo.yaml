@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  mongodb-1:
+    image: mongo:8.0
+    container_name: mongodb-1
+    command:
+      [
+        "mongod",
+        "--port", "27018",
+        "--replSet", "rs0",
+        "--bind_ip_all",
+        "--keyFile", "/data/configdb/keyfile"
+      ]
+    ports:
+      - "27018:27018"
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_REPLICA_SET_KEY=${MONGO_REPLICA_SET_KEY:-myReplicaKey}
+    volumes:
+      - ./init-keyfile.sh:/docker-entrypoint-initdb.d/init-keyfile.sh
+      - ./data/mongodb-1:/data/db
+      - ./data/mongodb-1/configdb:/data/configdb
+
+  mongodb-init:
+    image: mongo:8.0
+    container_name: mongodb-init
+    depends_on:
+      - mongodb-1
+    network_mode: host
+    command: bash -c "chmod +x /init-replica-set.sh && /init-replica-set.sh"
+    volumes:
+      - ./init-replica-set.sh:/init-replica-set.sh
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root

@@ -1,0 +1,39 @@
+{
+  "pipeline_name": "Dock_pipeline",
+  "start_machine": "camera",
+  "pipeline": {
+      "detector": {
+          "name": "Detector",
+          "module": "src/core/think/machine_learning/computer_vision/detector.py",
+          "config": {
+            "model_path": "src/models/fm/FM_dock_shutter_truck_det.engine",
+            "tracker_path": "src/configs/machine_learning/computer_vision/tracker/botsort_with_reid.yaml",
+            "device": "cuda:0", 
+            "plot": true,
+            "conf": 0.6,
+            "class_ids": [0, 1, 2, 3, 4, 5, 6]
+          },
+          "input": {
+            "ip_camera": "IP_Camera"
+          },
+          "execute": {
+            "process": {
+              "input": {
+                  "ip_camera": "IP_Camera"
+              }
+          }
+          },
+          "output": {
+            "labels": "list",
+            "boxes": "list",
+            "track_ids": "list",
+            "confidences": "list",
+            "zones_track_id": "dict",
+            "time_stamp": "str",
+            "frame": "ndarray",
+            "frame_number": "int"
+          },
+          "next_module": []
+        }
+    }
+  }

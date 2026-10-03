@@ -1,0 +1,5 @@
+{
+  "project": "digital",
+  "mode": "debug",
+  "db_url": "mongodb://seawoods:sentinelMongo%40123@localhost:27017/sentinel?authSource=sentinel&replicaSet=rs0&directConnection=true"
+}

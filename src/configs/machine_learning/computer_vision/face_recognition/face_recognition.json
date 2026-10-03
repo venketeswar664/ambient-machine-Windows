@@ -1,0 +1,36 @@
+{
+  "pipeline": {
+    "detector": {
+      "name": "Detector",
+      "module": "src/core/think/machine_learning/computer_vision/face_emotion_detector.py",
+      "config": {
+        "model_paths": {
+          "face_model": "src/models/yolov11n-face.pt",
+          "emotion_model": "src/models/attention_gimmefive_best_model.pth",
+          "embedding_model": "src/models/inception_resnet_v1.pth"
+        },
+        "device": "cuda:0",
+        "conf": 0.6,
+        "plot": true
+      },
+      "input": {
+        "ip_camera": "IP_Camera"
+      },
+      "execute": {
+        "process": {
+          "input": {
+            "ip_camera": "IP_Camera"
+          }
+        },
+        "output": {
+          "labels": "list",
+          "bboxes": "list",
+          "confidences": "list",
+          "emotions": "list",
+          "frame": "ndarray"
+        },
+        "next_module": []
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+    "pipeline_name": "entry_pipeline",
+    "start_machine": "camera",
+    "pipeline": {
+        "detector": {
+            "name": "Detector",
+            "module": "src/core/think/machine_learning/computer_vision/entry_exit_tracker.py",
+            "config": {
+              "model_path": "/home/sentinel/projects/ambient-machine/src/models/smart_cust_emp_yolo.pt",
+              "security_enabeled": true,
+              "tracker_path": "src/configs/machine_learning/computer_vision/tracker/botsort_with_reid.yaml",
+              "device": "cuda:0", 
+              "plot": true,
+              "conf": 0.6,
+              "class_ids": [0,1]
+            },
+            "input": {
+              "ip_camera": "IP_Camera"
+            },
+            "execute": {
+              "process": {
+                "input": {
+                    "ip_camera": "IP_Camera"
+                }
+            }
+            },
+            "output": {
+              "labels": "list",
+              "boxes": "list",
+              "track_ids": "list",
+              "confidences": "list",
+              "zones_track_id": "dict",
+              "time_stamp": "str",
+              "frame": "ndarray",
+              "frame_number": "int"
+            },
+            "next_module": []
+          }
+      }
+    }

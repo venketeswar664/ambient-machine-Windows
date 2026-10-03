@@ -1,0 +1,7 @@
+{
+    "io_manager":"src/configs/io_manager/io_manager.json",
+    "rest_server":"src/configs/api_server/fastapi_app.json",
+    "machine_learning":"src/configs/machine_learning/machine_learning.json",
+    "database":"src/configs/security/database/database-sentinel.json",
+    "status_bar_state":"src/configs/state/status_bar_state.json"
+}

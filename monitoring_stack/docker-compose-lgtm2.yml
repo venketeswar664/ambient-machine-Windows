@@ -1,0 +1,137 @@
+version: '3.7'
+
+volumes:
+  grafana-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  loki-data:
+    driver: local
+  tempo-data:
+    driver: local
+
+services:
+  # Grafana - Visualization Platform
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    network_mode : host
+    # ports:
+    #   - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.gmail.com:587
+      - GF_SMTP_USER=neophyte.sentinel@gmail.com
+      - GF_SMTP_PASSWORD=cjxk lwzh vkck saas
+      - GF_SMTP_SKIP_VERIFY=true
+      - GF_SMTP_FROM_ADDRESS=example@email.com
+      - GF_SMTP_FROM_NAME=Grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+      - loki
+    restart: unless-stopped
+    
+  # Prometheus - Metrics Collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    network_mode: host
+    # ports:
+    #   - "9090:9090"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --web.console.templates=/etc/prometheus/consoles
+      - --web.enable-lifecycle
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      # - ./experiments/monitoring_stack/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+
+  # Node Exporter - System Metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    network_mode : host
+    # ports:
+    #   - "9100:9100"
+    command:
+      - --path.rootfs=/host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    restart: unless-stopped
+
+  # cAdvisor - Container Metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    network_mode : host
+    # ports:
+    #   - "8080:8080"
+    # network_mode : host
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    command: -config.file=/etc/loki/config.yaml
+    network_mode: host
+    # ports:
+    #   - "3100:3100"
+    volumes:
+      - ./config/loki/config.yaml:/etc/loki/config.yaml:ro
+      - loki-data:/loki
+    restart: unless-stopped
+
+  # MongoDB to Loki forwarder
+  mongo-to-loki:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Make sure this builds your Python script
+    container_name: mongo-to-loki
+    environment:
+      - MONGO_URI=mongodb://sentinel:sentinelMongo_test123@localhost:27017/sentinel?authSource=sentinel
+      - MONGO_DB=sentinel
+      - MONGO_COLLECTION=sys_logs
+      - LOKI_URL=http://localhost:3100/loki/api/v1/push
+      - POLL_INTERVAL=10
+      - BATCH_SIZE=100
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+      - loki      
+
+  # blackbox-exporter:
+  #   image: prom/blackbox-exporter:latest
+  #   container_name: blackbox_exporter
+  #   network_mode: host
+  #   # ports:
+  #   #   - "9115:9115"
+  #   volumes:
+  #     - ./config/blackbox/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+  #   command:
+  #     - --config.file=/etc/blackbox_exporter/config.yml
+  #   cap_add:
+  #     - NET_RAW
+  #   restart: unless-stopped
+
+

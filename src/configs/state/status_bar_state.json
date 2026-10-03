@@ -1,0 +1,71 @@
+{
+    "connect":{
+        "text":"Connected",
+        "color":"#A86AF3"
+    },
+    "init":{
+        "text":"Initializing",
+        "color":"#A86AF3"
+    },
+    "ready":{
+        "text":"Ready",
+        "color":"#2FB9CB"
+    },
+    "processing":{
+        "text":"Processing",
+        "color":"#2FB9CB"
+    },
+    "Entering":{
+        "text":"Person is entering",
+        "color":"#F29D6C"
+    },
+    "DFMD_triggered":{
+        "text":"entered DFMD triggered",
+        "color":"#2FB9CB"
+    },
+    "DFMD_nottriggered":{
+        "text":"entered DFMD not triggered",
+        "color":"#2FB9CB"
+    },
+    "NoFriskingNotOkay":{
+        "text":"No Frisking, NOT OKAY",
+        "color":"#2FB9CB"
+    },
+    "FriskingOkay":{
+        "text":"Frisking, OKAY",
+        "color":"#2FB9CB"
+    },
+    "NoFriskingOkay":{
+        "text":"No Frisking, OKAY",
+        "color":"#2FB9CB"
+    },
+    "Inside":{
+        "text":"Person is inside",
+        "color":"#FCC875"
+    },
+    "empty":{
+        "text":"No Detections",
+        "color":"#C26232"
+    },
+    "cam-release":{
+        "text":"Camera released",
+        "color":"#2FB9CB"
+    },
+    "FriskingDone":{
+        "text":"Frisking Done",
+        "color":"#2FB9CB"
+    },
+    "UndergoingFrisking":{
+        "text":"Undergoing Frisking",
+        "color":"#2FB9CB"
+    },
+    "Trespasser":{
+        "text":"Trespasser Detected!, ALERT!!!",
+        "color":"#2FB9CB"
+    },
+    "InvalidFrisking":{
+        "text":"Invalid Frisking, ALERT!!!",
+        "color":"#2FB9CB"
+    }
+
+}

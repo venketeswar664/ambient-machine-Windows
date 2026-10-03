@@ -1,0 +1,39 @@
+{
+  "pipeline_name": "human_detector_pipeline",
+  "start_machine": "camera",
+  "pipeline": {
+      "detector": {
+          "name": "Detector",
+          "module": "src/core/think/machine_learning/computer_vision/rt-detr_detector.py",
+          "config": {
+            "trt_engine_path": "/home/sentinel/projects/video_processing/RT-DETR/rtdetrv2_pytorch/models/smart/model.engine",
+            "security_enabeled": true, 
+            "device": "cuda:0", 
+            "plot": true,
+            "conf": 0.5,
+            "class_ids": [0, 1] 
+          },
+          "input": {
+            "ip_camera": "IP_Camera"
+          },
+          "execute": {
+            "process": {
+              "input": {
+                  "ip_camera": "IP_Camera"
+              }
+          }
+          },
+          "output": {
+            "labels": "list",
+            "boxes": "list",
+            "track_ids": "list",
+            "confidences": "list",
+            "zones_track_id": "dict",
+            "time_stamp": "str",
+            "frame": "ndarray",
+            "frame_number": "int"
+          },
+          "next_module": []
+        }
+    }
+  }

@@ -1,0 +1,4 @@
+{
+    "human_tracker":"src/configs/machine_learning/computer_vision/human_tracker.json",
+    "dfmd_tracker":"src/configs/machine_learning/computer_vision/dfmd_tracker.json"
+}
